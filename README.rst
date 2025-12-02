@@ -1,3 +1,6 @@
+Maintenance status: The trufont project is currently discontinued.
+Although we will happily accept bug fixes, no new features are currently planned.
+
 |Build Status|
 
 TruFont
