@@ -454,7 +454,7 @@ class SelectionTool(BaseTool):
         if path is not None:
             scale = self.canvas.inverseScale
             color = trufont.TruFont.settings["backgroundStrokeColor"]
-            ctx.SetPen(wx.Pen(color, scale))
+            ctx.SetPen(wx.Pen(wx.Colour(*color), int(scale)))
             path1, path2 = path
             ctx.StrokePath(path1)
             ctx.StrokePath(path2)

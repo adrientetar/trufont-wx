@@ -55,7 +55,8 @@ class AlignmentControl(wx.Window):
                 return
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
 
         backgroundBrush = wx.Brush(self.GetBackgroundColour())
         valueBrush = wx.Brush(wx.Colour(102, 102, 102))

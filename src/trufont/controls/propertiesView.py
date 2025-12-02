@@ -459,7 +459,8 @@ class ButtonBar(wx.Window):
             trufont.TruFont.updateUI()
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
 
         ctx.SetBrush(wx.Brush(self.GetBackgroundColour()))
         ctx.DrawRectangle(0, 0, *self.GetSize())
@@ -750,9 +751,10 @@ class TransformHeader(wx.Panel):
             self.transform(yScale=-1, yOffset=2 * py)
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
         font = self.GetFont()
-        font.SetPixelSize(wx.Size(0, 10 * platformSpecific.typeSizeScale()))
+        font.SetPixelSize(wx.Size(0, int(10 * platformSpecific.typeSizeScale())))
         ctx.SetFont(font, wx.Colour(120, 120, 120))
         yOffset = 6 - ctx.GetTextExtent("x")[1] // 2
 
@@ -1216,9 +1218,10 @@ class LayersHeader(wx.Panel):
             self.DoCreateLayer()
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
         font = self.GetFont()
-        font.SetPixelSize(wx.Size(0, 10 * platformSpecific.typeSizeScale()))
+        font.SetPixelSize(wx.Size(0, int(10 * platformSpecific.typeSizeScale())))
         ctx.SetFont(font, wx.Colour(120, 120, 120))
         yOffset = 6 - ctx.GetTextExtent("x")[1] // 2
         width, _ = self.GetSize()
@@ -1245,7 +1248,8 @@ class PadControl(wx.Window):
         return wx.Size(0, 0)
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
         width, _ = self.GetSize()
 
         ctx.SetBrush(wx.Brush(self.GetBackgroundColour()))

@@ -37,7 +37,8 @@ class FontStatusBar(wx.Panel):
         self.Refresh()
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
         ctx.SetFont(self.GetFont(), self.GetForegroundColour())
 
         ctx.SetBrush(wx.Brush(self.GetBackgroundColour()))

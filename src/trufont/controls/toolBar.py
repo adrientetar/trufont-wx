@@ -140,9 +140,9 @@ class ToolBar(wx.Window):
             self.Refresh()
 
     def OnLeftUp(self, event):
-        self.ReleaseMouse()
         if self._mouseDownTool is None:
             return
+        self.ReleaseMouse()
         if self._underMouseTool == self._mouseDownTool:
             if self._mouseDownTool != self._currentTool:
                 self._currentTool = self._mouseDownTool
@@ -154,7 +154,8 @@ class ToolBar(wx.Window):
         self._mouseDownTool = None
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
 
         ctx.SetBrush(wx.Brush(self.GetBackgroundColour()))
         ctx.DrawRectangle(0, 0, *self.GetSize())

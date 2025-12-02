@@ -179,7 +179,7 @@ class ShapesTool(BaseTool):
         # it would be nice to be able to directly request a pen from the canvas
         canvas = self.canvas
         strokeColor = wx.Colour(*trufont.TruFont.settings["strokeColor"])
-        ctx.SetPen(wx.Pen(strokeColor, canvas.inverseScale))
+        ctx.SetPen(wx.Pen(strokeColor, int(canvas.inverseScale)))
         if self.drawRectangle:
             ctx_Draw = ctx.DrawRectangle
         else:

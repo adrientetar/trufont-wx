@@ -215,7 +215,7 @@ class GlyphContextView(wx.Window):
             pos = self.ScreenToClient(wx.GetMousePosition())
         elif anchor == "center":
             width, height = self.GetSize()
-            pos = wx.Point(.5 * width, .5 * height)
+            pos = wx.Point(int(.5 * width), int(.5 * height))
         else:
             raise ValueError(f"invalid anchor value: {anchor!r}")
         xDeltaToPos = pos.x / oldScale - self._offset.x / oldScale
@@ -265,14 +265,14 @@ class GlyphContextView(wx.Window):
         origin = self.canvasToClient(wx.RealPoint(x, y))
         w *= self._scale
         h *= self._scale
-        return rect.__class__(origin.x, origin.y - h, w, h)
+        return rect.__class__(int(origin.x), int(origin.y - h), int(w), int(h))
 
     def clientRectToCanvas(self, rect):
         x, y, w, h = rect.Get()
         origin = self.clientToCanvas(wx.RealPoint(x, y))
         w *= self._inverseScale
         h *= self._inverseScale
-        return rect.__class__(origin.x, origin.y - h, w, h)
+        return rect.__class__(int(origin.x), int(origin.y - h), int(w), int(h))
 
     # -------------
     # Drawing funcs
@@ -303,7 +303,7 @@ class GlyphContextView(wx.Window):
         # layers
         if self.drawingAttribute("showBackground"):
             strokeColor = self.drawingAttribute("backgroundStrokeColor")
-            pen = wx.Pen(strokeColor, scale)
+            pen = wx.Pen(wx.Colour(*strokeColor), int(scale))
             ctx.SetPen(pen)
             for otherLayer in glyph.layers:
                 if not otherLayer.visible or otherLayer is layer:
@@ -313,7 +313,7 @@ class GlyphContextView(wx.Window):
                 # stroke
                 color = otherLayer.color
                 if color:
-                    ctx.SetPen(wx.Pen(wx.Colour(*color), scale))
+                    ctx.SetPen(wx.Pen(wx.Colour(*color), int(scale)))
                 ctx.StrokePath(otherLayer.closedComponentsGraphicsPath)
                 ctx.StrokePath(otherLayer.openComponentsGraphicsPath)
                 ctx.StrokePath(otherLayer.closedGraphicsPath)
@@ -343,7 +343,7 @@ class GlyphContextView(wx.Window):
                 "showSelection"
             ):
                 selectionColor = wx.Colour(*self.drawingAttribute("selectionColor"))
-                ctx.SetPen(wx.Pen(selectionColor, 3.5 * scale))
+                ctx.SetPen(wx.Pen(selectionColor, int(3.5 * scale)))
                 for path in layer.selectedPaths:
                     ctx.StrokePath(path.graphicsPath)
             # points
@@ -367,7 +367,7 @@ class GlyphContextView(wx.Window):
             showStroke = self.drawingAttribute("showStroke")
             if showStroke or self.drawingAttribute("showFill"):
                 strokeColor = wx.Colour(*self.drawingAttribute("strokeColor"))
-                ctx.SetPen(wx.Pen(strokeColor, scale))
+                ctx.SetPen(wx.Pen(strokeColor, int(scale)))
                 if showStroke:
                     ctx.StrokePath(layer.closedGraphicsPath)
                 ctx.StrokePath(layer.openGraphicsPath)

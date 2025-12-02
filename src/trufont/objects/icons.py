@@ -7,8 +7,8 @@ modulePath = os.path.dirname(modulePath)
 
 def GetUserIcon(name, width, height, parent):
     scale = parent.GetContentScaleFactor()
-    width *= scale
-    height *= scale
+    width = int(width * scale)
+    height = int(height * scale)
     path = os.path.join(modulePath, "resources", name)
     img = wx.Image(path)
     bmp = img.Scale(width, height, wx.IMAGE_QUALITY_HIGH).ConvertToBitmap()

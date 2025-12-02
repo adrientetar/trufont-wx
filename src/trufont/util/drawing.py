@@ -1,11 +1,27 @@
 from math import atan2, cos, pi, radians, sin
 import wx
 
-_rdr = wx.GraphicsRenderer.GetDefaultRenderer()
+_rdr = None
 
-CreateMatrix = _rdr.CreateMatrix
-CreateMeasuringContext = _rdr.CreateMeasuringContext
-CreatePath = _rdr.CreatePath
+
+def _getRenderer():
+    global _rdr
+    if _rdr is None:
+        _rdr = wx.GraphicsRenderer.GetDefaultRenderer()
+    return _rdr
+
+
+def CreateMatrix(*args, **kwargs):
+    return _getRenderer().CreateMatrix(*args, **kwargs)
+
+
+def CreateMeasuringContext(*args, **kwargs):
+    return _getRenderer().CreateMeasuringContext(*args, **kwargs)
+
+
+def CreatePath(*args, **kwargs):
+    return _getRenderer().CreatePath(*args, **kwargs)
+
 
 # -----------------
 # Convenience funcs
@@ -105,7 +121,7 @@ def trianglePath(ctx, x, y, size, angle):
 def drawCaret(ctx, scale, font):
     master = font.selectedMaster
     ctx.PushState()
-    ctx.SetPen(wx.Pen(wx.Colour(63, 63, 63), scale))
+    ctx.SetPen(wx.Pen(wx.Colour(63, 63, 63), int(scale)))
     ctx.SetAntialiasMode(wx.ANTIALIAS_NONE)
     ctx.StrokeLine(0, master.descender, 0, master.ascender)
     ctx.PopState()
@@ -125,7 +141,7 @@ def drawGlyphFigure(ctx, glyph, width, height, selectionColor=None):
         color = wx.Colour(r, g, b, a)
         ctx.SetBrush(wx.Brush(color))
         ctx.DrawRectangle(0, figureHeight, width, captionHeight)
-        color.Set(r, g, b, .4 * a)
+        color.Set(r, g, b, int(.4 * a))
         ctx.SetBrush(wx.Brush(color))
         ctx.DrawRectangle(0, 0, width, figureHeight)
     if glyph.lastModified is not None:
@@ -166,7 +182,7 @@ def drawGlyphFigure(ctx, glyph, width, height, selectionColor=None):
         # foreground template
         uni = glyph.unicode
         char = chr(int(uni, 16) if uni is not None else 0xFFFD)
-        ctx_font.SetPixelSize(wx.Size(0, scale * glyph.font.unitsPerEm))
+        ctx_font.SetPixelSize(wx.Size(0, int(scale * glyph.font.unitsPerEm)))
         ctx.SetFont(ctx_font, wx.Colour(228, 228, 228))
         textWidth, lh, d, _ = ctx.GetFullTextExtent(char)
         xOffset = (width - textWidth) // 2
@@ -190,7 +206,7 @@ def drawGrid(ctx, scale, rect, color=None):
         path.MoveToPoint(xMin, y)
         path.AddLineToPoint(xMax, y)
         y -= 1
-    ctx.SetPen(wx.Pen(color, scale))
+    ctx.SetPen(wx.Pen(color, int(scale)))
     ctx.StrokePath(path)
 
 
@@ -235,7 +251,7 @@ def drawLayerComponents(ctx, layer, scale, fillColor=None, selectedFillColor=Non
     fillBrush = wx.Brush(fillColor)
     selectedFillBrush = wx.Brush(selectedFillColor)
     showSelection, wr = selectedFillColor.IsOk(), wx.WINDING_RULE
-    ctx.SetPen(wx.Pen(fillColor, scale))
+    ctx.SetPen(wx.Pen(fillColor, int(scale)))
     for component in layer._components:
         drawSelection = showSelection and component.selected
         if drawSelection:
@@ -268,7 +284,7 @@ def drawLayerGuidelines(ctx, layer, scale, rect, color=None, masterColor=None):
         toDraw = ((layer, color),)
     for container, color in toDraw:
         brush = wx.Brush(color)
-        pen = wx.Pen(color, scale)
+        pen = wx.Pen(color, int(scale))
         for guideline in container.guidelines:
             x, y = guideline.x, guideline.y
             ax, ay = cos_sin_deg(guideline.angle)
@@ -276,7 +292,7 @@ def drawLayerGuidelines(ctx, layer, scale, rect, color=None, masterColor=None):
                 r, g, b, _ = color.Get()
                 color.Set(r, g, b, 190)
                 ctx.SetBrush(wx.Brush(color))
-                ctx.SetPen(wx.Pen(color, scale))
+                ctx.SetPen(wx.Pen(color, int(scale)))
             else:
                 ctx.SetBrush(brush)
                 ctx.SetPen(pen)
@@ -311,7 +327,7 @@ def drawLayerImage(ctx, layer, scale, drawSelection=True, selectionColor=None):
     ctx.DrawBitmap(0, 0, bitmap)
     ctx.PopState()
     if drawSelection and image.selected:
-        ctx.SetPen(wx.Pen(selectionColor, 3.5 * scale))
+        ctx.SetPen(wx.Pen(selectionColor, int(3.5 * scale)))
         ctx.DrawRectangle(bitmap.GetRectangle())
     ctx.PopState()
 
@@ -352,7 +368,7 @@ def drawLayerMetrics(ctx, layer, scale, color=None, zonesColor=None):
         path.AddLineToPoint(width, hi)
         ctx.PushState()
         ctx.SetAntialiasMode(wx.ANTIALIAS_NONE)
-        ctx.SetPen(wx.Pen(color, scale))
+        ctx.SetPen(wx.Pen(color, int(scale)))
         ctx.StrokePath(path)
         ctx.PopState()
 
@@ -438,6 +454,8 @@ def drawLayerPoints(
             else:
                 start = None
             # others
+            if not points:
+                continue
             prev = points[-1]
             breakHandle = path.open
             for point in points:
@@ -495,10 +513,10 @@ def drawLayerPoints(
                 prev = point
         # markers
         ctx.SetBrush(wx.Brush(markersColor))
-        ctx.SetPen(wx.Pen(wx.Colour(255, 255, 255, 125), scale))
+        ctx.SetPen(wx.Pen(wx.Colour(255, 255, 255, 125), int(scale)))
         ctx.DrawPath(markerPath, wx.WINDING_RULE)
         # handles
-        ctx.SetPen(wx.Pen(otherColor, scale))
+        ctx.SetPen(wx.Pen(otherColor, int(scale)))
         ctx.StrokePath(handlePath)
         # fill
         ctx.SetBrush(wx.Brush(onCurveColor))
@@ -506,18 +524,18 @@ def drawLayerPoints(
         ctx.SetBrush(wx.Brush(onCurveSmoothColor))
         ctx.FillPath(selectedSmoothPath, wx.WINDING_RULE)
         # stroke
-        pen = wx.Pen(onCurveColor, 1.2 * scale)
+        pen = wx.Pen(onCurveColor, int(1.2 * scale))
         ctx.SetPen(pen)
         ctx.StrokePath(pointPath)
         pen.SetColour(onCurveSmoothColor)
         ctx.SetPen(pen)
         ctx.StrokePath(smoothPath)
         # notch
-        ctx.SetPen(wx.Pen(wx.Colour(68, 68, 68), scale))
+        ctx.SetPen(wx.Pen(wx.Colour(68, 68, 68), int(scale)))
         ctx.StrokePath(notchPath)
         # off curves
         ctx.SetBrush(wx.Brush(backgroundColor))
-        ctx.SetPen(wx.Pen(offCurveColor, 1.75 * scale))
+        ctx.SetPen(wx.Pen(offCurveColor, int(1.75 * scale)))
         ctx.DrawPath(offPath)
         r, g, b, _ = offCurveColor.Get()
         offCurveColor.Set(r, g, b, 190)
@@ -568,7 +586,7 @@ def drawLayerSelectionBounds(ctx, layer, scale):
     # rect
     color = wx.Colour(34, 34, 34, 128)
     ctx.SetBrush(wx.NullBrush)
-    pen = wx.Pen(color, scale, wx.PENSTYLE_USER_DASH)
+    pen = wx.Pen(color, int(scale), wx.PENSTYLE_USER_DASH)
     pen.SetDashes([1, 4])
     ctx.SetPen(pen)
     ctx.DrawRectangle(l, b, r - l, t - b)
@@ -593,7 +611,7 @@ def drawLayerSelectionBounds(ctx, layer, scale):
         path.AddEllipse(midx, hy, size, size)
         path.AddEllipse(midx, ly, size, size)
     ctx.SetBrush(wx.Brush(wx.Colour(255, 255, 255, 120)))
-    ctx.SetPen(wx.Pen(wx.Colour(163, 163, 163), scale))
+    ctx.SetPen(wx.Pen(wx.Colour(163, 163, 163), int(scale)))
     ctx.DrawPath(path)
 
 
@@ -635,7 +653,7 @@ def drawLayerTextMetrics(ctx, layer, scale, color=None):
         nh = nw = 4 * scale
         ctx.PushState()
         ctx.SetAntialiasMode(wx.ANTIALIAS_NONE)
-        ctx.SetPen(wx.Pen(color, scale))
+        ctx.SetPen(wx.Pen(color, int(scale)))
         ctx.StrokeLine(0, descender - nh, 0, descender + nh)
         ctx.StrokeLine(0, -nh, 0, nh)
         ctx.StrokeLine(0, hi - nh, 0, hi)
@@ -653,7 +671,7 @@ def drawLayerTextMetrics(ctx, layer, scale, color=None):
         #
         ctx.PushState()
         font = ctx.GetFont()
-        font.SetPointSize(8 * scale)
+        font.SetPointSize(int(8 * scale))
         ctx.SetFont(font, color)
         ctx.Scale(1, -1)
         ph = 3 * scale

@@ -62,7 +62,7 @@ class FeatureDropdown(wx.Window):
         ctx = CreateMeasuringContext()
         ctx.SetFont(self.GetFont(), self.GetForegroundColour())
         textWidth, _ = ctx.GetTextExtent(_title)
-        return wx.Size(31 + textWidth, 25)
+        return wx.Size(int(31 + textWidth), 25)
 
     def DoPickFeatures(self):
         popup = self._popup
@@ -82,7 +82,8 @@ class FeatureDropdown(wx.Window):
         self.pressed = not self._pressed
 
     def OnPaint(self, event):
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
         if self._pressed:
             backgroundColor = self._popup.GetBackgroundColour()
         else:

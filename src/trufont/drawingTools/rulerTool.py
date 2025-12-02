@@ -166,7 +166,7 @@ class RulerTool(BaseTool):
         color = wx.Colour(255, 111, 146, 170)
 
         # line
-        ctx.SetPen(wx.Pen(color, scale))
+        ctx.SetPen(wx.Pen(color, int(scale)))
         ctx.StrokeLine(p1x, p1y, p2x, p2y)
         # ellipses
         path = ctx.CreatePath()

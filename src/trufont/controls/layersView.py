@@ -192,7 +192,7 @@ class LayersView(wx.Window):
                     trufont.TruFont.updateUI()
                 return
             rect.Offset(36, 0)
-            rect.SetWidth(ctx.GetTextExtent(layer.name)[0])
+            rect.SetWidth(int(ctx.GetTextExtent(layer.name)[0]))
             if rect.Contains(pos):
                 self.DoEditLayerName(i, layer)
                 return
@@ -238,11 +238,10 @@ class LayersView(wx.Window):
             ctx.Translate(12, 6)
             color = layer.color
             masterLayer = layer.masterLayer
-            origin = ctx.GetTransform().Get()[-2:]
             if color is not None or hover or masterLayer:
                 if color is not None:
                     color = wx.Colour(color)
-                ColorButton.DoDraw(self, dc, wx.Rect(*origin, 16, 16), color)
+                ColorButton.DoDraw(self, dc, wx.Rect(0, idx * cellHeight, 16, 16), color)
             ctx.Translate(24, 0)
             if not masterLayer:
                 ctx.Translate(10, 0)

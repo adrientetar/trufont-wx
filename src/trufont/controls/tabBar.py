@@ -79,7 +79,7 @@ class TabBar(wx.Window):
             for name in self._tabs:
                 width += ctx.GetTextExtent(name)[0] + 12
             width -= 4
-        return wx.Size(width, 37)
+        return wx.Size(int(width), 37)
 
     def DoGetTabColor(self, index):
         if index == self._currentTab:
@@ -96,7 +96,8 @@ class TabBar(wx.Window):
 
     def OnPaint(self, event):
         self._tabsRanges = {}
-        ctx = wx.GraphicsContext.Create(self)
+        dc = wx.PaintDC(self)
+        ctx = wx.GraphicsContext.Create(dc)
         font = self.GetFont()
         ctx.SetFont(font, wx.BLACK)
 

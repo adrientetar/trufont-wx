@@ -98,4 +98,4 @@ class ColorButton(wx.Window):
     def OnPaint(self, event):
         dc = wx.PaintDC(self)
 
-        self.DoDraw(dc, wx.Rect(0, 0, 28, 16), self._color)
+        self.DoDraw(self, dc, wx.Rect(0, 0, 28, 16), self._color)

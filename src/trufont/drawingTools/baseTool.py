@@ -88,8 +88,8 @@ class BaseTool(object):
             ctx.DrawPath(path, wx.WINDING_RULE)
         dc.SelectObject(wx.NullBitmap)
         image = bitmap.ConvertToImage()
-        image.SetOption(wx.IMAGE_OPTION_CUR_HOTSPOT_X, x)
-        image.SetOption(wx.IMAGE_OPTION_CUR_HOTSPOT_Y, y)
+        image.SetOption(wx.IMAGE_OPTION_CUR_HOTSPOT_X, int(x))
+        image.SetOption(wx.IMAGE_OPTION_CUR_HOTSPOT_Y, int(y))
         return wx.Cursor(image)
 
     # events
